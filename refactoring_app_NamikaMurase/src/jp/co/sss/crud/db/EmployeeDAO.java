@@ -26,7 +26,7 @@ public class EmployeeDAO {
 	 * @throws ClassNotFoundException ドライバクラスが不在の場合に送出
 	 * @throws SQLException           DB処理でエラーが発生した場合に送出
 	 */
-	public static List<Employee> findAllEmp() throws ClassNotFoundException, SQLException {
+	public static List<Employee> findAll() throws ClassNotFoundException, SQLException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -42,13 +42,7 @@ public class EmployeeDAO {
 			// SQL文を実行
 			resultSet = preparedStatement.executeQuery();
 
-			//resultSetの結果Setがない場合はfalse
-			if (!resultSet.isBeforeFirst()) {
-				System.out.println(ConstantMsg.NOT_EMPLOYEE_MSG);
-			}
-
-			// レコードを出力
-			System.out.println(ConstantMsg.TABLE_COLUMN_NAME);
+			// 検索結果をDTOへ格納
 			while (resultSet.next()) {
 				Employee employee = new Employee();
 
@@ -85,7 +79,7 @@ public class EmployeeDAO {
 	 * @throws SQLException           DB処理でエラーが発生した場合に送出
 	 * @throws IOException            入力処理でエラーが発生した場合に送出
 	 */
-	public static List<Employee> findEmpName() throws ClassNotFoundException, SQLException, IOException {
+	public static List<Employee> findByEmpName() throws ClassNotFoundException, SQLException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		List<Employee> employees = new ArrayList<>();
@@ -113,11 +107,7 @@ public class EmployeeDAO {
 
 			// SQL文を実行
 			resultSet = preparedStatement.executeQuery();
-			if (!resultSet.isBeforeFirst()) {
-				System.out.println(ConstantMsg.NOT_EMPLOYEE_MSG);
-			}
 
-			System.out.println(ConstantMsg.TABLE_COLUMN_NAME);
 			while (resultSet.next()) {
 				// DTO Employeeのオブジェクト生成
 				Employee employee = new Employee();
@@ -133,8 +123,6 @@ public class EmployeeDAO {
 				employees.add(employee);
 
 			}
-
-			System.out.println("");
 
 		} finally {
 			// クローズ処理
@@ -155,7 +143,7 @@ public class EmployeeDAO {
 	 * @throws SQLException           DB処理でエラーが発生した場合に送出
 	 * @throws IOException            入力処理でエラーが発生した場合に送出
 	 */
-	public static List<Employee> findDeptId(String deptId) throws ClassNotFoundException, SQLException, IOException {
+	public static List<Employee> findByDeptId(String deptId) throws ClassNotFoundException, SQLException, IOException {
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
@@ -180,11 +168,7 @@ public class EmployeeDAO {
 			// SQL文を実行
 			resultSet = preparedStatement.executeQuery();
 
-			if (!resultSet.isBeforeFirst()) {
-				System.out.println(ConstantMsg.NOT_EMPLOYEE_MSG);
-			}
-
-			System.out.println(ConstantMsg.TABLE_COLUMN_NAME);
+			// 結果をDTOへ格納
 			while (resultSet.next()) {
 				// DTO Employeeのオブジェクト生成
 				Employee employee = new Employee();
@@ -201,7 +185,6 @@ public class EmployeeDAO {
 
 			}
 
-			System.out.println("");
 		} finally {
 			// クローズ処理
 			DBManager.close(resultSet);
@@ -247,8 +230,6 @@ public class EmployeeDAO {
 			// SQL文を実行
 			preparedStatement.executeUpdate();
 
-			// 登録完了メッセージを出力
-			System.out.println(ConstantMsg.INSERT_CONPLATE_MSG);
 		} finally {
 			DBManager.close(preparedStatement);
 			DBManager.close(connection);
@@ -317,26 +298,22 @@ public class EmployeeDAO {
 	 * @throws SQLException           DB処理でエラーが発生した場合に送出
 	 * @throws IOException            入力処理でエラーが発生した場合に送出
 	 */
-	public static void delete() {
+	public static void delete(Integer empId) {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		try {
 			// データベースに接続
 			connection = DBManager.getConnection();
-			String empId = br.readLine();
 
 			// ステートメントの作成
 			preparedStatement = connection.prepareStatement(ConstantSQL.SQL_DELETE);
 
 			// 社員IDをバインド
-			preparedStatement.setInt(1, Integer.parseInt(empId));
+			preparedStatement.setInt(1, empId);
 
 			// SQL文の実行(失敗時は戻り値0)
 			preparedStatement.executeUpdate();
-
-			System.out.println(ConstantMsg.DELETE_CONPLATE_MSG);
 
 		} catch (Exception e) {
 			e.printStackTrace();

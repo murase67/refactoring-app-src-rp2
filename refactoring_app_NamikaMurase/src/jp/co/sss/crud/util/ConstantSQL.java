@@ -34,6 +34,8 @@ public class ConstantSQL {
 
 	/** DB接続用ユーザー */
 	public static final String USER_NAME = "console_crud_user";
+	
+//	public static final String USER_NAME = "postgres";
 
 	/** DB接続用パスワード */
 	public static final String PASSWORD = "systemsss";
