@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.List;
 
-import jp.co.sss.crud.db.DBController;
+import jp.co.sss.crud.db.EmployeeDAO;
+import jp.co.sss.crud.dto.Employee;
 import jp.co.sss.crud.util.ConstantMsg;
 
 /**
@@ -27,6 +29,8 @@ public class MainSystem {
 	 */
 	public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException, ParseException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+		List<Employee> employees;
 
 		int menuNo = 0;
 
@@ -50,7 +54,13 @@ public class MainSystem {
 			switch (menuNo) {
 			case 1:
 				// 全件表示機能の呼出
-				DBController.findAllEmp();
+
+				employees = EmployeeDAO.findAllEmp();
+
+				for (Employee emp : employees) {
+					System.out.println(emp);
+				}
+
 				break;
 
 			case 2:
@@ -58,7 +68,13 @@ public class MainSystem {
 				System.out.print(ConstantMsg.EMP_NAME);
 
 				// 検索機能の呼出
-				DBController.findEmpName();
+
+				employees = EmployeeDAO.findEmpName();
+
+				for (Employee emp : employees) {
+					System.out.println(emp);
+				}
+
 				break;
 
 			case 3:
@@ -67,7 +83,11 @@ public class MainSystem {
 				String inputDeptId = br.readLine();
 
 				// 検索機能の呼出
-				DBController.findDeptId(inputDeptId);
+				employees = EmployeeDAO.findDeptId(inputDeptId);
+				for (Employee emp : employees) {
+					System.out.println(emp);
+				}
+
 				break;
 
 			case 4:
@@ -82,7 +102,7 @@ public class MainSystem {
 				String deptId = br.readLine();
 
 				// 登録機能の呼出
-				DBController.insert(empName, gender, birthday, deptId);
+				EmployeeDAO.insert(empName, gender, birthday, deptId);
 				break;
 
 			case 5:
@@ -94,7 +114,7 @@ public class MainSystem {
 				Integer.parseInt(inputEmpId);
 
 				// 更新機能の呼出
-				DBController.update(inputEmpId);
+				EmployeeDAO.update(inputEmpId);
 				System.out.println(ConstantMsg.UPDATE_COMPLATE_MSG);
 
 				break;
@@ -104,7 +124,7 @@ public class MainSystem {
 				System.out.print(ConstantMsg.DELETE_DEPT_ID_MSG);
 
 				// 削除機能の呼出
-				DBController.delete();
+				EmployeeDAO.delete();
 				break;
 
 			}

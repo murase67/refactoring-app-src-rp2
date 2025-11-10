@@ -10,20 +10,15 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
+import jp.co.sss.crud.dto.Department;
+import jp.co.sss.crud.dto.Employee;
 import jp.co.sss.crud.util.ConstantMsg;
 import jp.co.sss.crud.util.ConstantSQL;
 
-/**
- * DB操作処理用のクラス
- *
- * @author System Shared
- */
-public class DBController {
-
-	/** インスタンス化を禁止 */
-	private DBController() {
-	}
+public class EmployeeDAO {
 
 	/**
 	 * 全ての社員情報を検索
@@ -31,10 +26,11 @@ public class DBController {
 	 * @throws ClassNotFoundException ドライバクラスが不在の場合に送出
 	 * @throws SQLException           DB処理でエラーが発生した場合に送出
 	 */
-	public static void findAllEmp() throws ClassNotFoundException, SQLException {
+	public static List<Employee> findAllEmp() throws ClassNotFoundException, SQLException {
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+		List<Employee> employees = new ArrayList<>();
 
 		try {
 			// DBに接続
@@ -49,31 +45,23 @@ public class DBController {
 			//resultSetの結果Setがない場合はfalse
 			if (!resultSet.isBeforeFirst()) {
 				System.out.println(ConstantMsg.NOT_EMPLOYEE_MSG);
-				return;
 			}
 
 			// レコードを出力
 			System.out.println(ConstantMsg.TABLE_COLUMN_NAME);
 			while (resultSet.next()) {
-				System.out.print(resultSet.getString("emp_id") + "\t");
-				System.out.print(resultSet.getString("emp_name") + "\t");
+				Employee employee = new Employee();
 
-				int gender = Integer.parseInt(resultSet.getString("gender"));
-				if (gender == 0) {
-					System.out.print(ConstantMsg.GENDER_NODATE + "\t");
-				} else if (gender == 1) {
-					System.out.print(ConstantMsg.GENDER_MALE + "\t");
+				// DTOへの格納
+				employee.setEmpId(resultSet.getInt("emp_id"));
+				employee.setEmpName(resultSet.getString("emp_name"));
+				employee.setGender(resultSet.getInt("gender"));
+				employee.setBirthday(resultSet.getString("birthday"));
+				employee.setDepartment(new Department(null, resultSet.getString("dept_name")));
 
-				} else if (gender == 2) {
-					System.out.print(ConstantMsg.GENDER_FAMALE + "\t");
+				// リストへの追加
+				employees.add(employee);
 
-				} else if (gender == 9) {
-					System.out.print(ConstantMsg.GENDER_OTHER + "\t");
-
-				}
-
-				System.out.print(resultSet.getString("birthday") + "\t");
-				System.out.println(resultSet.getString("dept_name"));
 			}
 
 			System.out.println("");
@@ -85,6 +73,9 @@ public class DBController {
 			// DBとの接続を切断
 			DBManager.close(connection);
 		}
+
+		// DTOを戻す
+		return employees;
 	}
 
 	/**
@@ -94,8 +85,10 @@ public class DBController {
 	 * @throws SQLException           DB処理でエラーが発生した場合に送出
 	 * @throws IOException            入力処理でエラーが発生した場合に送出
 	 */
-	public static void findEmpName() throws ClassNotFoundException, SQLException, IOException {
+	public static List<Employee> findEmpName() throws ClassNotFoundException, SQLException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+		List<Employee> employees = new ArrayList<>();
 
 		// 検索ワード
 		String searchWord = br.readLine();
@@ -122,46 +115,23 @@ public class DBController {
 			resultSet = preparedStatement.executeQuery();
 			if (!resultSet.isBeforeFirst()) {
 				System.out.println(ConstantMsg.NOT_EMPLOYEE_MSG);
-				return;
 			}
 
 			System.out.println(ConstantMsg.TABLE_COLUMN_NAME);
 			while (resultSet.next()) {
-				System.out.print(resultSet.getString("emp_id"));
-				System.out.print("\t");
+				// DTO Employeeのオブジェクト生成
+				Employee employee = new Employee();
 
-				System.out.print(resultSet.getString("emp_name"));
-				System.out.print("\t");
+				// DTOへの格納
+				employee.setEmpId(resultSet.getInt("emp_id"));
+				employee.setEmpName(resultSet.getString("emp_name"));
+				employee.setGender(resultSet.getInt("gender"));
+				employee.setBirthday(resultSet.getString("birthday"));
+				employee.setDepartment(new Department(null, resultSet.getString("dept_name")));
 
-				String genderString = resultSet.getString("gender");
-				int gender = Integer.parseInt(genderString);
-				if (gender == 0) {
-					System.out.print(ConstantMsg.GENDER_NODATE);
-				} else if (gender == 1) {
-					System.out.print(ConstantMsg.GENDER_MALE);
+				// リストへの追加
+				employees.add(employee);
 
-				} else if (gender == 2) {
-					System.out.print(ConstantMsg.GENDER_FAMALE);
-
-				} else if (gender == 9) {
-					System.out.print(ConstantMsg.GENDER_OTHER);
-
-				}
-
-				System.out.print("\t");
-				System.out.print(resultSet.getString("birthday"));
-				System.out.print("\t");
-
-				String deptIdString = resultSet.getString("dept_id");
-				int deptId2 = Integer.parseInt(deptIdString);
-				if (deptId2 == 1) {
-					System.out.println(ConstantMsg.DEPT_SALES);
-				} else if (deptId2 == 2) {
-					System.out.println(ConstantMsg.DEPT_ACCOUNTING);
-				} else if (gender == 3) {
-					System.out.println(ConstantMsg.DEPT_GENERAL_AFFAIRS);
-
-				}
 			}
 
 			System.out.println("");
@@ -174,6 +144,8 @@ public class DBController {
 			// DBとの接続を切断
 			DBManager.close(connection);
 		}
+
+		return employees;
 	}
 
 	/**
@@ -183,11 +155,13 @@ public class DBController {
 	 * @throws SQLException           DB処理でエラーが発生した場合に送出
 	 * @throws IOException            入力処理でエラーが発生した場合に送出
 	 */
-	public static void findDeptId(String deptId) throws ClassNotFoundException, SQLException, IOException {
+	public static List<Employee> findDeptId(String deptId) throws ClassNotFoundException, SQLException, IOException {
 
 		Connection connection = null;
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
+
+		List<Employee> employees = new ArrayList<>();
 
 		try {
 			// DBに接続
@@ -208,46 +182,23 @@ public class DBController {
 
 			if (!resultSet.isBeforeFirst()) {
 				System.out.println(ConstantMsg.NOT_EMPLOYEE_MSG);
-				return;
 			}
 
 			System.out.println(ConstantMsg.TABLE_COLUMN_NAME);
 			while (resultSet.next()) {
-				System.out.print(resultSet.getString("emp_id"));
-				System.out.print("\t");
+				// DTO Employeeのオブジェクト生成
+				Employee employee = new Employee();
 
-				System.out.print(resultSet.getString("emp_name"));
-				System.out.print("\t");
+				// DTOへの格納
+				employee.setEmpId(resultSet.getInt("emp_id"));
+				employee.setEmpName(resultSet.getString("emp_name"));
+				employee.setGender(resultSet.getInt("gender"));
+				employee.setBirthday(resultSet.getString("birthday"));
+				employee.setDepartment(new Department(null, resultSet.getString("dept_name")));
 
-				String genderString = resultSet.getString("gender");
-				int gender = Integer.parseInt(genderString);
-				if (gender == 0) {
-					System.out.print(ConstantMsg.GENDER_NODATE);
-				} else if (gender == 1) {
-					System.out.print(ConstantMsg.GENDER_MALE);
+				// リストへの追加
+				employees.add(employee);
 
-				} else if (gender == 2) {
-					System.out.print(ConstantMsg.GENDER_FAMALE);
-
-				} else if (gender == 9) {
-					System.out.print(ConstantMsg.GENDER_OTHER);
-
-				}
-
-				System.out.print("\t");
-				System.out.print(resultSet.getString("birthday"));
-				System.out.print("\t");
-
-				String deptIdString = resultSet.getString("dept_id");
-				int deptId2 = Integer.parseInt(deptIdString);
-				if (deptId2 == 1) {
-					System.out.println(ConstantMsg.DEPT_SALES);
-				} else if (deptId2 == 2) {
-					System.out.println(ConstantMsg.DEPT_ACCOUNTING);
-				} else if (gender == 3) {
-					System.out.println(ConstantMsg.DEPT_GENERAL_AFFAIRS);
-
-				}
 			}
 
 			System.out.println("");
@@ -259,6 +210,8 @@ public class DBController {
 			// DBとの接続を切断
 			DBManager.close(connection);
 		}
+
+		return employees;
 	}
 
 	/**
@@ -324,6 +277,7 @@ public class DBController {
 			// ステートメントの作成
 			preparedStatement = connection.prepareStatement(ConstantSQL.SQL_UPDATE);
 
+			// 名前を入力
 			System.out.print(ConstantMsg.EMP_NAME);
 			String empName = br.readLine();
 			// 性別を入力
