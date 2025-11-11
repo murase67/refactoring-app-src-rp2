@@ -28,7 +28,7 @@ public class ConstantMsg {
 	
 	public static final String BIRTHDAY = "生年月日(西暦年/月/日):";
 	
-	public static final String UPDATE_DEPT_ID_MSG = "更新する社員の社員IDを入力してください：";
+	public static final String UPDATE_EMP_ID_MSG = "更新する社員の社員IDを入力してください：";
 	
 	public static final String UPDATE_COMPLATE_MSG = "社員情報を更新しました";
 	
@@ -36,7 +36,7 @@ public class ConstantMsg {
 	
 	public static final String DELETE_CONPLATE_MSG = "社員情報を削除しました";
 	
-	public static final String DELETE_DEPT_ID_MSG = "削除する社員の社員IDを入力してください：";
+	public static final String DELETE_EMP_ID_MSG = "削除する社員の社員IDを入力してください：";
 	
 	public static final String SYSTEM_END_MSG = "システムを終了します。";
 	
@@ -57,4 +57,6 @@ public class ConstantMsg {
 	public static final String DEPT_ACCOUNTING = "経理部";
 	
 	public static final String DEPT_GENERAL_AFFAIRS = "総務部";
+	
+	public static final String MSG_SYSTEM_ERROR = "システムエラーです。";
 }

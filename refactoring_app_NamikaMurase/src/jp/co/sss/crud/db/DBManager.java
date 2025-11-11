@@ -44,9 +44,13 @@ public class DBManager {
 	 * @throws SQLException
 	 *             クローズ処理に失敗した場合に送出
 	 */
-	public static void close(Connection connection) throws SQLException {
+	public static void close(Connection connection) {
 		if (connection != null) {
-			connection.close();
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -58,9 +62,13 @@ public class DBManager {
 	 * @throws SQLException
 	 *             クローズ処理に失敗した場合に送出
 	 */
-	public static void close(PreparedStatement preparedStatement) throws SQLException {
+	public static void close(PreparedStatement preparedStatement){
 		if (preparedStatement != null) {
-			preparedStatement.close();
+			try {
+				preparedStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -72,9 +80,13 @@ public class DBManager {
 	 * @throws SQLException
 	 *             クローズ処理に失敗した場合に送出
 	 */
-	public static void close(ResultSet resultSet) throws SQLException {
+	public static void close(ResultSet resultSet){
 		if (resultSet != null) {
-			resultSet.close();
+			try {
+				resultSet.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
